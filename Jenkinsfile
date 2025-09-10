@@ -21,7 +21,7 @@ pipeline {
             steps {
                 sh '''
                   oc login -u $USER https://api.cluster-459j4.dynamic.redhatworkshops.io:6443 \
-                     \
+                     -p $pass\
                     --insecure-skip-tls-verify=true
                   oc project $OPENSHIFT_PROJECT
                 '''
