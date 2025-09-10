@@ -8,7 +8,7 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "contoh doang!\n")
+	fmt.Fprintf(w, "contoh deploy by aing\n")
 }
 
 func main() {
