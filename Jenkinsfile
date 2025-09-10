@@ -43,17 +43,16 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                  # kalau belum ada deployment, buat dari imagestream
-                  oc get dc $IMAGE || oc new-app $IMAGE:latest
+                # apply deployment, service, and route from yaml
+                oc apply -f contoh.yaml -n $OPENSHIFT_PROJECT
 
-                  # rollout deployment
-                  oc rollout latest dc/$IMAGE || true
+                # restart deployment to use new image
+                oc rollout restart deployment/$IMAGE -n $OPENSHIFT_PROJECT
 
-                  # expose service kalau belum ada
-                  oc get route $IMAGE || oc expose svc/$IMAGE
+                # wait until rollout is complete
+                oc rollout status deployment/$IMAGE -n $OPENSHIFT_PROJECT
                 '''
             }
         }
     }
 }
-

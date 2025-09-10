@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: contoh
-          image: image-registry.openshift-image-registry.svc:5000/YOUR_PROJECT/hello-world:latest
+          image: image-registry.openshift-image-registry.svc:5000/contoh/contoh:latest
           ports:
             - containerPort: 8080
 ---
