@@ -40,19 +40,55 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                sh '''
-                # apply deployment, service, and route from yaml
-                oc apply -f contoh.yaml -n $OPENSHIFT_PROJECT
-
-                # restart deployment to use new image
-                oc rollout restart deployment/$IMAGE -n $OPENSHIFT_PROJECT
-
-                # wait until rollout is complete
-                oc rollout status deployment/$IMAGE -n $OPENSHIFT_PROJECT
-                '''
+        stage('Generate Deployment YAML') {
+    steps {
+                writeFile file: 'contoh.yaml', text: '''
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+        name: contoh
+        labels:
+            app: contoh
+        spec:
+        replicas: 1
+        selector:
+            matchLabels:
+            app: contoh
+        template:
+            metadata:
+            labels:
+                app: contoh
+            spec:
+            containers:
+                - name: contoh
+                image: image-registry.openshift-image-registry.svc:5000/contoh/contoh:latest
+                ports:
+                    - containerPort: 8080
+        ---
+        apiVersion: v1
+        kind: Service
+        metadata:
+        name: contoh
+        spec:
+        selector:
+            app: contoh
+        ports:
+            - port: 80
+            targetPort: 8080
+        ---
+        apiVersion: route.openshift.io/v1
+        kind: Route
+        metadata:
+        name: contoh
+        spec:
+        to:
+            kind: Service
+            name: contoh
+        port:
+            targetPort: 80
+        '''
             }
         }
+
     }
 }
