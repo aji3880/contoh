@@ -53,7 +53,7 @@ pipeline {
         stage('Helm Deploy') {
             steps {
                 sh '''
-                  $HELM_BIN upgrade --install $RELEASE_NAME ./helm/$CHART_NAME \
+                $WORKSPACE/bin/helm upgrade --install $RELEASE_NAME ./helm/$CHART_NAME \
                     --namespace $PROJECT \
                     --set image.repository=$REGISTRY/$PROJECT/$IMAGE \
                     --set image.tag=latest
