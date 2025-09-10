@@ -22,6 +22,7 @@ pipeline {
                   oc login $OPENSHIFT_SERVER \
                      --token=$OPENSHIFT_TOKEN \
                      --insecure-skip-tls-verify=true
+                  oc new-project $OPENSHIFT_PROJECT
                   oc project $OPENSHIFT_PROJECT
                 '''
             }
