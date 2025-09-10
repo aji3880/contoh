@@ -32,8 +32,8 @@ pipeline {
         stage('Build Image') {
             steps {
                 sh '''
-                  podman build -t $REGISTRY/$PROJECT/$IMAGE:latest .
-                  podman push $REGISTRY/$PROJECT/$IMAGE:latest
+                oc new-build --name=$IMAGE --binary --strategy=docker --to=$IMAGE:latest --to-docker=true --push-secret=builder-dockercfg \
+                    || oc start-build $IMAGE --from-dir=. --follow --wait
                 '''
             }
         }
