@@ -38,7 +38,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                  oc apply -f hello-world.yaml -n $OPENSHIFT_PROJECT
+                  oc apply -f contoh.yaml -n $OPENSHIFT_PROJECT
                 '''
             }
         }
