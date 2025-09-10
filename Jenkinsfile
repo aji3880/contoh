@@ -38,16 +38,15 @@ pipeline {
             }
         }
 
-        stage('Install Helm CLI') {
+        stage('Helm Deploy') {
             steps {
                 sh '''
-                curl -sSL https://get.helm.sh/helm-v3.14.3-linux-amd64.tar.gz -o helm.tar.gz
-                tar -xzf helm.tar.gz
-                mv linux-amd64/helm /usr/local/bin/helm
-                helm version
+                $WORKSPACE/bin/helm upgrade --install $RELEASE_NAME ./helm/$CHART_NAME \
+                    --namespace $OPENSHIFT_PROJECT \
+                    --set image.repository=$REGISTRY/$PROJECT/$IMAGE \
+                    --set image.tag=latest
                 '''
             }
         }
-
     }
 }
