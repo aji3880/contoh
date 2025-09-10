@@ -27,18 +27,6 @@ pipeline {
             }
         }
 
-        stage('Build in OpenShift') {
-            steps {
-                sh '''
-                  # kalau build config belum ada, buat dulu
-                  oc get bc $IMAGE || oc new-build --binary --name=$IMAGE -l app=$IMAGE
-
-                  # trigger build dari source code di workspace Jenkins
-                  oc start-build $IMAGE --from-dir=. --follow --wait
-                '''
-            }
-        }
-
         stage('Generate Deployment YAML') {
     steps {
                 writeFile file: 'contoh.yaml', text: '''
@@ -86,6 +74,17 @@ pipeline {
         port:
             targetPort: 80
         '''
+            }
+        }
+                stage('Build in OpenShift') {
+            steps {
+                sh '''
+                  # kalau build config belum ada, buat dulu
+                  oc get bc $IMAGE || oc new-build --binary --name=$IMAGE -l app=$IMAGE
+
+                  # trigger build dari source code di workspace Jenkins
+                  oc start-build $IMAGE --from-dir=. --follow --wait
+                '''
             }
         }
 
