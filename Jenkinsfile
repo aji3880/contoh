@@ -5,6 +5,7 @@ pipeline {
         REGISTRY = "image-registry.openshift-image-registry.svc:5000"
         PROJECT = "${OPENSHIFT_PROJECT}"
         IMAGE = "contoh"
+        OPENSHIFT_TOKEN="ha256~z-H-0gekzAMz36knBoxHdJJLcLbzMRFmH6SW5WFqdDg"
     }
 
     stages {
