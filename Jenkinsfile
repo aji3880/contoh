@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/aji80/ocp-contoh.git'
+                git branch: 'main', url: 'https://github.com/aji3880/contoh.git'
             }
         }
 
