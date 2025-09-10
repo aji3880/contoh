@@ -8,29 +8,14 @@ pipeline {
         OPENSHIFT_TOKEN="sha256~z-H-0gekzAMz36knBoxHdJJLcLbzMRFmH6SW5WFqdDg"
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/aji3880/contoh.git'
-            }
-        }
-
-        stage('Login to OpenShift') {
+    stage('Build in OpenShift') {
             steps {
                 sh '''
-                  oc login https://api.cluster-459j4.dynamic.redhatworkshops.io:6443 \
-                     --token=$OPENSHIFT_TOKEN \
-                    --insecure-skip-tls-verify=true
-                  oc project $OPENSHIFT_PROJECT
-                '''
-            }
-        }
+                  # kalau build config belum ada, buat dulu
+                  oc get bc $IMAGE || oc new-build --binary --name=$IMAGE -l app=$IMAGE
 
-        stage('Build Image') {
-            steps {
-                sh '''
-                  podman build -t $REGISTRY/$PROJECT/$IMAGE:latest .
-                  podman push $REGISTRY/$PROJECT/$IMAGE:latest
+                  # trigger build dari source code di workspace Jenkins
+                  oc start-build $IMAGE --from-dir=. --follow --wait
                 '''
             }
         }
@@ -38,9 +23,15 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                  oc apply -f contoh.yaml -n $OPENSHIFT_PROJECT
+                  # kalau belum ada deployment, buat dari imagestream
+                  oc get dc $IMAGE || oc new-app $IMAGE:latest
+
+                  # rollout deployment
+                  oc rollout latest dc/$IMAGE || true
+
+                  # expose service kalau belum ada
+                  oc get route $IMAGE || oc expose svc/$IMAGE
                 '''
-            }
         }
     }
 }
