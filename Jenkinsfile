@@ -44,8 +44,8 @@ pipeline {
         stage('Build Image') {
             steps {
                 sh '''
-                  oc new-build --name=$IMAGE --binary --strategy=docker --to=$IMAGE:latest -n $OPENSHIFT_PROJECT || true
-                  oc start-build $IMAGE --from-dir=. --follow --wait -n $OPENSHIFT_PROJECT
+                  oc new-build --name=$IMAGE --binary --strategy=docker --to=$IMAGE:latest -n $PROJECT || true
+                  oc start-build $IMAGE --from-dir=. --follow --wait -n $PROJECT
                 '''
             }
         }
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 sh '''
                   $HELM_BIN upgrade --install $RELEASE_NAME ./helm/$CHART_NAME \
-                    --namespace $OPENSHIFT_PROJECT \
+                    --namespace $PROJECT \
                     --set image.repository=$REGISTRY/$PROJECT/$IMAGE \
                     --set image.tag=latest
                 '''
