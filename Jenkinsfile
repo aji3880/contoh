@@ -3,9 +3,7 @@ pipeline {
 
     environment {
         REGISTRY = "image-registry.openshift-image-registry.svc:5000"
-        PROJECT = "contoh"
-        USER = "admin"
-        pass = "xn2TCwndu5jelLv4" 
+        PROJECT = "contoh" 
         IMAGE = "contoh"
         OPENSHIFT_TOKEN="sha256~z-H-0gekzAMz36knBoxHdJJLcLbzMRFmH6SW5WFqdDg"
     }
@@ -20,8 +18,8 @@ pipeline {
         stage('Login to OpenShift') {
             steps {
                 sh '''
-                  oc login -u $USER https://api.cluster-459j4.dynamic.redhatworkshops.io:6443 \
-                     -p $pass\
+                  oc login https://api.cluster-459j4.dynamic.redhatworkshops.io:6443 \
+                     --token=$OPENSHIFT_TOKEN \
                     --insecure-skip-tls-verify=true
                   oc project $OPENSHIFT_PROJECT
                 '''
