@@ -2,13 +2,32 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "image-registry.openshift-image-registry.svc:5000"
-        PROJECT = "contoh" 
+        PROJECT = "contoh"
         IMAGE = "contoh"
-        OPENSHIFT_TOKEN="sha256~z-H-0gekzAMz36knBoxHdJJLcLbzMRFmH6SW5WFqdDg"
+        OPENSHIFT_PROJECT = "contoh" 
+        OPENSHIFT_TOKEN = "sha256~z-H-0gekzAMz36knBoxHdJJLcLbzMRFmH6SW5WFqdDg"
+        OPENSHIFT_SERVER = "https://api.cluster-459j4.dynamic.redhatworkshops.io:6443"
     }
 
-    stage('Build in OpenShift') {
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/aji3880/contoh.git'
+            }
+        }
+
+        stage('Login to OpenShift') {
+            steps {
+                sh '''
+                  oc login $OPENSHIFT_SERVER \
+                     --token=$OPENSHIFT_TOKEN \
+                     --insecure-skip-tls-verify=true
+                  oc project $OPENSHIFT_PROJECT
+                '''
+            }
+        }
+
+        stage('Build in OpenShift') {
             steps {
                 sh '''
                   # kalau build config belum ada, buat dulu
@@ -32,6 +51,8 @@ pipeline {
                   # expose service kalau belum ada
                   oc get route $IMAGE || oc expose svc/$IMAGE
                 '''
+            }
         }
     }
 }
+
