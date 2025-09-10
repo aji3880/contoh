@@ -10,14 +10,14 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/YOUR_USERNAME/ocp-hello-world.git'
+                git branch: 'main', url: 'https://github.com/aji3880/contoh.git'
             }
         }
 
         stage('Login to OpenShift') {
             steps {
                 sh '''
-                  oc login https://api.cluster.example.com:6443 \
+                  oc login https://api.cluster-459j4.dynamic.redhatworkshops.io:6443 \
                     --token=$OPENSHIFT_TOKEN \
                     --insecure-skip-tls-verify=true
                   oc project $OPENSHIFT_PROJECT
