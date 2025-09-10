@@ -4,7 +4,7 @@ pipeline {
     environment {
         REGISTRY = "image-registry.openshift-image-registry.svc:5000"
         PROJECT = "${OPENSHIFT_PROJECT}"
-        IMAGE = "hello-world"
+        IMAGE = "contoh"
     }
 
     stages {
