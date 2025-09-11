@@ -7,4 +7,4 @@ spec:
     app: {{ .Chart.Name }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
+      targetPort: {{ .Values.containerPort }}
