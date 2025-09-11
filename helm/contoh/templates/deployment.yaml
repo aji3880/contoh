@@ -18,4 +18,4 @@ spec:
         - name: {{ .Chart.Name }}
           image: image-registry.openshift-image-registry.svc:5000/contoh/contoh:latest
           ports:
-            - containerPort: {{ .Values.containerPort }}
+            - containerPort: {{ .Values.targetPort}}

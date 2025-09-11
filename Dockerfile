@@ -5,7 +5,7 @@ RUN go mod init contoh && \
     go mod tidy && \
     go build -o contoh
 
-    FROM gcr.io/distroless/base-debian12
+FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 COPY --from=builder /app/contoh .
 
