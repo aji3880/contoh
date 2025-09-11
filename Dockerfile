@@ -8,5 +8,4 @@ RUN go mod init contoh && \
     FROM gcr.io/distroless/base-debian12
 WORKDIR /app
 COPY --from=builder /app/contoh .
-EXPOSE 8080
 CMD ["./contoh"]
