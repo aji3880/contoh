@@ -54,9 +54,10 @@ pipeline {
             steps {
                 sh '''
                 $WORKSPACE/bin/helm upgrade --install $RELEASE_NAME ./helm/$CHART_NAME \
-                    --namespace $PROJECT \
-                    --set image.repository=$REGISTRY/$PROJECT/$IMAGE \
-                    --set image.tag=latest
+                --namespace $PROJECT \
+                --set image.repository=$REGISTRY/$PROJECT/$IMAGE \
+                --set image.tag=latest \
+                --set service.port=8080
                 '''
             }
         }
