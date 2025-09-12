@@ -31,42 +31,32 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                script {
-                    sh """
-                    oc start-build $IMAGE_NAME --from-dir=. --follow || oc new-build --binary=true --name=$IMAGE_NAME -l app=$IMAGE_NAME
-                    oc start-build $IMAGE_NAME --from-dir=. --follow
-                    """
-                }
+                sh """
+                oc start-build $IMAGE_NAME --from-dir=. --follow || \
+                oc new-build --binary=true --name=$IMAGE_NAME -l app=$IMAGE_NAME
+                oc start-build $IMAGE_NAME --from-dir=. --follow
+                """
             }
         }
 
         stage('Deploy with Helm') {
-            agent {
-                docker {
-                    image 'alpine/helm:3.16.2'
-                    args '-v $HOME/.kube:/root/.kube -v $HOME/.config/helm:/root/.config/helm'
-                }
-            }
-        stage('Deploy with Helm') {
-            agent any
             steps {
                 sh '''
                 # install helm binary kalau belum ada
                 if ! command -v helm >/dev/null 2>&1; then
-                curl -sSL https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz -o helm.tar.gz
-                tar -zxvf helm.tar.gz
-                mv linux-amd64/helm /usr/local/bin/helm
+                  curl -sSL https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz -o helm.tar.gz
+                  tar -zxvf helm.tar.gz
+                  mv linux-amd64/helm /usr/local/bin/helm
                 fi
 
                 helm version
-                oc project $OCP_PROJECT
+                oc project $OPENSHIFT_PROJECT
 
                 helm upgrade --install $HELM_RELEASE ./helm-chart \
-                    --set image.repository=$REGISTRY/$IMAGE_NAME \
-                    --set image.tag=$IMAGE_TAG
+                  --set image.repository=$REGISTRY/$IMAGE_NAME \
+                  --set image.tag=$IMAGE_TAG
                 '''
             }
         }
     }
-}
 }
