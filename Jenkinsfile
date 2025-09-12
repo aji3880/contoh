@@ -7,7 +7,7 @@ pipeline {
         IMAGE_TAG = "latest"
         OPENSHIFT_PROJECT = "contoh"
         HELM_RELEASE = "go-ocp-app"
-        OPENSHIFT_TOKEN = "sha256~T1CjB8uU7nkZ2HFBPgMr9tRlCsaB9pE_BgWQw_34_BU"
+        OPENSHIFT_TOKEN = "sha256~ly1PoenMCC2cVqwCyYxnZf78vZasp4vWWZZjMiQFwVE"
         OPENSHIFT_SERVER = "https://api.cluster-459j4.dynamic.redhatworkshops.io:6443"
     }
 
