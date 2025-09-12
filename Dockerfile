@@ -1,12 +1,11 @@
-FROM golang:1.22 AS builder
+FROM golang:1.22 as builder
+
 WORKDIR /app
 COPY . .
-RUN go mod init contoh && \
-    go mod tidy && \
-    go build -o contoh
+RUN go mod init go-ocp-app && go build -o app main.go
 
-FROM gcr.io/distroless/base-debian12
+FROM registry.access.redhat.com/ubi8/ubi-minimal
 WORKDIR /app
-COPY --from=builder /app/contoh .
-
-CMD ["./contoh"]
+COPY --from=builder /app/app .
+EXPOSE 8080
+CMD ["./app"]

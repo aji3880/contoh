@@ -11,6 +11,19 @@ pipeline {
         OPENSHIFT_SERVER = "https://api.cluster-459j4.dynamic.redhatworkshops.io:6443"
     }
 
+
+
+pipeline {
+    agent any
+
+    environment {
+        REGISTRY = "quay.io/yourrepo"
+        IMAGE_NAME = "contoh"
+        IMAGE_TAG = "latest"
+        OCP_PROJECT = "dev-project"
+        HELM_RELEASE = "go-ocp-app"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -29,38 +42,29 @@ pipeline {
             }
         }
 
-         stage('Install Helm CLI') {
-            steps {
-                sh '''
-                  mkdir -p $WORKSPACE/bin
-                  curl -sSL https://get.helm.sh/helm-v3.14.3-linux-amd64.tar.gz -o helm.tar.gz
-                  tar -xzf helm.tar.gz
-                  mv linux-amd64/helm $WORKSPACE/bin/helm
-                  $WORKSPACE/bin/helm version
-                '''
-            }
-        }
-
         stage('Build Image') {
             steps {
-                sh '''
-                  oc new-build --name=$IMAGE --binary --strategy=docker --to=$IMAGE:latest -n $PROJECT || true
-                  oc start-build $IMAGE --from-dir=. --follow --wait -n $PROJECT
-                '''
+                script {
+                    sh """
+                    oc start-build $IMAGE_NAME --from-dir=. --follow || oc new-build --binary=true --name=$IMAGE_NAME -l app=$IMAGE_NAME
+                    oc start-build $IMAGE_NAME --from-dir=. --follow
+                    """
+                }
             }
         }
 
-        stage('Helm Deploy') {
+        stage('Deploy to OpenShift') {
             steps {
-                sh '''
-                $WORKSPACE/bin/helm upgrade --install $RELEASE_NAME ./helm/$CHART_NAME \
-                --namespace $PROJECT \
-                --set image.repository=$REGISTRY/$PROJECT/$IMAGE \
-                --set image.tag=latest \
-                --set service.port=8080
-                '''
+                script {
+                    sh """
+                    oc project $OPENSHIFT_PROJECT
+                    helm upgrade --install $HELM_RELEASE ./helm-chart \
+                        --set image.repository=$REGISTRY/$IMAGE_NAME \
+                        --set image.tag=$IMAGE_TAG
+                    """
+                }
             }
         }
-
     }
 }
+
