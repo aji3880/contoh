@@ -40,16 +40,21 @@ pipeline {
             }
         }
 
-        stage('Deploy to OpenShift') {
-            steps {
-                script {
-                    sh """
-                    oc project $OPENSHIFT_PROJECT
-                    helm upgrade --install $HELM_RELEASE ./helm-chart \
-                        --set image.repository=$REGISTRY/$IMAGE_NAME \
-                        --set image.tag=$IMAGE_TAG
-                    """
+        stage('Deploy with Helm') {
+            agent {
+                docker {
+                    image 'alpine/helm:3.16.2'
+                    args '-v $HOME/.kube:/root/.kube -v $HOME/.config/helm:/root/.config/helm'
                 }
+            }
+            steps {
+                sh """
+                helm version
+                oc project $OCP_PROJECT
+                helm upgrade --install go-ocp-app ./helm-chart \
+                    --set image.repository=$REGISTRY/$IMAGE_NAME \
+                    --set image.tag=$IMAGE_TAG
+                """
             }
         }
     }
