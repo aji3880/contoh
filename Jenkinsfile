@@ -47,14 +47,24 @@ pipeline {
                     args '-v $HOME/.kube:/root/.kube -v $HOME/.config/helm:/root/.config/helm'
                 }
             }
+        stage('Deploy with Helm') {
+            agent any
             steps {
-                sh """
+                sh '''
+                # install helm binary kalau belum ada
+                if ! command -v helm >/dev/null 2>&1; then
+                curl -sSL https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz -o helm.tar.gz
+                tar -zxvf helm.tar.gz
+                mv linux-amd64/helm /usr/local/bin/helm
+                fi
+
                 helm version
                 oc project $OCP_PROJECT
-                helm upgrade --install go-ocp-app ./helm-chart \
+
+                helm upgrade --install $HELM_RELEASE ./helm-chart \
                     --set image.repository=$REGISTRY/$IMAGE_NAME \
                     --set image.tag=$IMAGE_TAG
-                """
+                '''
             }
         }
     }
