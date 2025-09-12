@@ -42,21 +42,25 @@ pipeline {
         stage('Deploy with Helm') {
             steps {
                 sh '''
+                mkdir -p $WORKSPACE/bin
+                export PATH=$WORKSPACE/bin:$PATH
+
                 # install helm binary kalau belum ada
                 if ! command -v helm >/dev/null 2>&1; then
-                  curl -sSL https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz -o helm.tar.gz
-                  tar -zxvf helm.tar.gz
-                  mv linux-amd64/helm /usr/local/bin/helm
+                curl -sSL https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz -o helm.tar.gz
+                tar -zxvf helm.tar.gz
+                mv linux-amd64/helm $WORKSPACE/bin/helm
                 fi
 
                 helm version
                 oc project $OPENSHIFT_PROJECT
 
                 helm upgrade --install $HELM_RELEASE ./helm-chart \
-                  --set image.repository=$REGISTRY/$IMAGE_NAME \
-                  --set image.tag=$IMAGE_TAG
+                --set image.repository=$REGISTRY/$IMAGE_NAME \
+                --set image.tag=$IMAGE_TAG
                 '''
             }
         }
+
     }
 }
