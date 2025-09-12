@@ -2,26 +2,13 @@ pipeline {
     agent any
 
     environment {
-        REGISTRY = "image-registry.openshift-image-registry.svc:5000"
-        PROJECT = "contoh"
-        IMAGE = "contoh"
-        CHART_NAME = "contoh"
-        RELEASE_NAME = "contoh"
-        OPENSHIFT_TOKEN = "sha256~T1CjB8uU7nkZ2HFBPgMr9tRlCsaB9pE_BgWQw_34_BU"
-        OPENSHIFT_SERVER = "https://api.cluster-459j4.dynamic.redhatworkshops.io:6443"
-    }
-
-
-
-pipeline {
-    agent any
-
-    environment {
         REGISTRY = "quay.io/yourrepo"
         IMAGE_NAME = "contoh"
         IMAGE_TAG = "latest"
-        OCP_PROJECT = "dev-project"
+        OPENSHIFT_PROJECT = "contoh"
         HELM_RELEASE = "go-ocp-app"
+        OPENSHIFT_TOKEN = "sha256~T1CjB8uU7nkZ2HFBPgMr9tRlCsaB9pE_BgWQw_34_BU"
+        OPENSHIFT_SERVER = "https://api.cluster-459j4.dynamic.redhatworkshops.io:6443"
     }
 
     stages {
@@ -67,5 +54,3 @@ pipeline {
         }
     }
 }
-}
-
