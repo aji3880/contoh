@@ -1,11 +1,10 @@
-FROM golang:1.22 as builder
-
-WORKDIR /app
+# Build stage
+FROM golang:1.22 AS builder
+WORKDIR /src
 COPY . .
-RUN go mod init go-ocp-app && go build -o app main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o app .
 
-FROM registry.access.redhat.com/ubi8/ubi-minimal
-WORKDIR /app
-COPY --from=builder /app/app .
-EXPOSE 8080
-CMD ["./app"]
+# Runtime stage
+FROM scratch
+COPY --from=builder /src/app /app
+ENTRYPOINT ["/app"]
